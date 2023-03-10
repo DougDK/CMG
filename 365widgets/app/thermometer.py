@@ -7,15 +7,18 @@ class Thermometers:
     
     def handle(self, message):
         splited = message.split(" ")
-        known_temperature = splited[1]
+        known_temperature = float(splited[1])
         thermometer_name = splited[4]
-        thermometer_value = splited[5]
+        thermometer_value = float(splited[5])
         thermometer = self.dict_thermometers.get(thermometer_name)
         if (not thermometer):
             thermometer = Thermometer(thermometer_name)
             self.dict_thermometers.update({thermometer_name: thermometer})
         thermometer.evaluate_live(known_temperature, thermometer_value)
         return
+    
+    def get_values(self):
+        return {key: value.current_qc_evaluation for key,value in self.dict_thermometers.items()}
 
 
 class Thermometer:
@@ -23,20 +26,20 @@ class Thermometer:
     old_average = 0
     old_variance = 0
     n = 0
+    current_qc_evaluation = None
 
     def __init__(self, name):
         self.name = name
         return
     
     def __quality_control(self, average, standard_deviation, known_temperature):
-        if(abs(average-known_temperature)<0.5 and standard_deviation<3):
-            qc_evaluation = "ultra precise"
-        if(abs(average-known_temperature)<0.5 and standard_deviation<5):
-            qc_evaluation = "very precise"
+        if(abs(average-known_temperature)<=0.5 and standard_deviation<3):
+            return "ultra precise"
+        elif(abs(average-known_temperature)<=0.5 and standard_deviation<5):
+            return "very precise"
         else:
-            qc_evaluation = "precise"
-        return qc_evaluation
-
+            return "precise"
+    
     def evaluate_static(self, known_temperature, values):
         n = len(values)
         average = sum(values)/n
@@ -48,15 +51,13 @@ class Thermometer:
         return qc_evaluation
 
     def evaluate_live(self, known_temperature, new_value):
-        global n, old_average, old_variance
-        
-        n += 1
-        new_average = old_average*(n-1)/n + new_value/n
-        new_variance = (n-1)/n * (old_variance + (old_average - new_value)**2/n)
+        self.n += 1
+        new_average = self.old_average*(self.n-1)/self.n + new_value/self.n
+        new_variance = (self.n-1)/self.n * (self.old_variance + (self.old_average - new_value)**2/self.n)
         standard_deviation = math.sqrt(new_variance)
 
-        qc_evaluation = self.__quality_control(new_average, standard_deviation, known_temperature)
+        self.current_qc_evaluation = self.__quality_control(new_average, standard_deviation, known_temperature)
 
-        old_average = new_average
-        old_variance = new_variance
-        return qc_evaluation
+        self.old_average = new_average
+        self.old_variance = new_variance
+        return self.current_qc_evaluation

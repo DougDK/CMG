@@ -1,6 +1,6 @@
 import re
-from thermometer import Thermometers
-from humidity import Humidities
+from .thermometer import Thermometers
+from .humidity import Humidities
 
 TIMESTAMP_PATTERN = r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$'
 ROOM_VALUES_LENGTH = 3
@@ -27,7 +27,7 @@ def parser(file_name):
             if(len(splited)==ROOM_VALUES_LENGTH):
                 room_degree = splited[ROOM_VALUES_DEGREE_INDEX]
                 relative_humidity = splited[ROOM_VALUES_HUMIDITY_INDEX]
-            if(len(splited)==SENSOR_SECTION_LENGTH):
+            elif(len(splited)==SENSOR_SECTION_LENGTH):
                 # Check if it is a Sensor (<type><name>) or a Reading (<time><value>)
                 if(re.match(TIMESTAMP_PATTERN, splited[SENSOR_FIRST_INDEX])): # Reading
                     time = splited[SENSOR_FIRST_INDEX]
@@ -41,9 +41,9 @@ def parser(file_name):
                         " ".join(values))
                     if(sensor_type=="thermometer"):
                         thermometers.handle(message)
-                    if(sensor_type=="humidity"):
+                    elif(sensor_type=="humidity"):
                         humidities.handle(message)
-
+                    print(thermometers.get_values() | humidities.get_values())
                 else: # Sensor
                     sensor_type = splited[SENSOR_FIRST_INDEX]
                     sensor_name = splited[SENSOR_SECOND_INDEX]

@@ -8,7 +8,7 @@ RUN python3 -m pip install --upgrade pip
 
 COPY --from=curl-stage /tmp/get-poetry.py /tmp/get-poetry.py
 
-RUN python /tmp/get-poetry.py --version 1.1.12
+RUN python /tmp/get-poetry.py --version 1.4.0
 ENV PATH="${PATH}:/root/.local/bin"
 # Making poetry use the global python of the container
 RUN poetry config virtualenvs.create false
