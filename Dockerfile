@@ -5,10 +5,8 @@ RUN pip install poetry
 
 RUN useradd -ms /bin/bash widgets
 
-COPY --chown=widgets . /365widgets/
-COPY 365widgets/pyproject.toml poetry.lock /
-RUN poetry install --no-dev \
-    && rm pyproject.toml poetry.lock
+COPY --chown=widgets . /app/
+WORKDIR /app/365widgets
+RUN poetry install --no-dev
 
-WORKDIR 365widgets
 USER widgets

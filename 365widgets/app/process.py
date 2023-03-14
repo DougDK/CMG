@@ -1,4 +1,5 @@
 import re
+import os
 from thermometer import Thermometers
 from humidity import Humidities
 
@@ -10,11 +11,11 @@ SENSOR_SECTION_LENGTH = 2
 SENSOR_FIRST_INDEX = 0
 SENSOR_SECOND_INDEX = 1
 
-sample_output = dict()
 thermometers = Thermometers()
 humidities = Humidities()
 
 def parser(file_name):
+    print("Reading from: {}".format(file_name))
     with open(file_name) as f:
         room_degree = None
         relative_humidity = None
@@ -50,4 +51,11 @@ def parser(file_name):
 
 if __name__ == "__main__":
     import sys
-    parser(sys.argv[1])
+    try:
+        parser(sys.argv[1])
+    except IndexError:
+        try:
+            parser(os.environ['LOG_PATH'])
+        except KeyError:
+            print("You did not specify a file. Either add as a parameter or define LOG_PATH.")
+            sys.exit(1)
