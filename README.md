@@ -34,7 +34,7 @@ docker build -t 365widgets .
 docker run 365widgets python app/process.py logs/example.log
 ```
 
-In order to process a different log, you can use Docker volumes  
+In order to process a different log, you can also use Docker volumes  
 
 ```bash
 docker run -v ~/local/path/to/logs:/app/365widgets/logs 365widgets python app/process.py logs/some.log
