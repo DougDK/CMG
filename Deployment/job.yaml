@@ -1,0 +1,12 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: 365widgets
+spec:
+  template:
+    spec:
+      containers:
+      - name: 365widgets
+        image: 365widgets:latest
+        command: ["python",  "app/process.py", "log"]
+      restartPolicy: Never

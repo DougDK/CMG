@@ -1,6 +1,6 @@
 import re
-from .thermometer import Thermometers
-from .humidity import Humidities
+from thermometer import Thermometers
+from humidity import Humidities
 
 TIMESTAMP_PATTERN = r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$'
 ROOM_VALUES_LENGTH = 3
@@ -47,3 +47,7 @@ def parser(file_name):
                 else: # Sensor
                     sensor_type = splited[SENSOR_FIRST_INDEX]
                     sensor_name = splited[SENSOR_SECOND_INDEX]
+
+if __name__ == "__main__":
+    import sys
+    parser(sys.argv[1])
