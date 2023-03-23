@@ -55,7 +55,10 @@ if __name__ == "__main__":
         parser(sys.argv[1])
     except IndexError:
         try:
-            parser(os.environ['LOG_PATH'])
+            if(os.environ['LOG_PATH']):
+                parser(os.environ['LOG_PATH'])
+            else:
+                raise KeyError
         except KeyError:
             print("You did not specify a file. Either add as a parameter or define LOG_PATH.")
             sys.exit(1)

@@ -31,17 +31,39 @@ Follow the steps below in order to Build and Run the container solution:
 1. Run the commands  
 ```bash
 docker build -t 365widgets .
-docker run 365widgets python app/process.py logs/example.log
+docker run \
+    --name=365widgets \
+    365widgets python app/process.py logs/example.log
+docker rm -f 365widgets
 ```
 
-In order to process a different log, you can also use Docker volumes  
+In order to process a different log, you can also use Docker volumes. The LOG_PATH environment variable still valid if necessary.  
 
 ```bash
-docker run -v ~/local/path/to/logs:/app/365widgets/logs 365widgets python app/process.py logs/some.log
+docker volume create 365widgets
+docker run -d \
+    --name 365widgets \
+    --mount source=365widgets,target=/app/365widgets/logs \
+    365widgets sleep infinity
+docker cp ~/local/path/to/some.log 365widgets:/app/365widgets/logs
+docker rm -f 365widgets
+docker run \
+    --name 365widgets \
+    --mount source=365widgets,target=/app/365widgets/logs \
+    365widgets python app/process.py logs/some.log
+docker rm -f 365widgets
 ```
-or
+
+The LOG_PATH environment variable still valid in the containerized context.  
+
 ```bash
-docker run -v ~/local/path/to/logs:/app/365widgets/logs -e LOG_PATH=/app/365widgets/logs/some.log 365widgets python app/process.py
+docker run \
+    --name=365widgets \
+    --mount source=365widgets,target=/app/365widgets/logs \
+    -e LOG_PATH=/app/365widgets/logs/some.log \
+    365widgets python app/process.py
+docker rm -f 365widgets
+docker volume rm 365widgets
 ```
 
 
@@ -52,8 +74,9 @@ Follow the steps below in order to deploy it into a minikube local cluster:
 
 
 1. Install minikube  
-1. `minikube init`  
+1. `minikube start`  
 1. `eval $(minikube docker-env)`  
 1. `docker build -t 365widgets .`  
-1. `kubectl apply -k job/`  
+1. `kubectl apply -k k8s/`  
 1. `kubectl logs job/365widgets -n 365widgets`  
+1. `kubectl remove -k k8s/`  
