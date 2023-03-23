@@ -79,4 +79,4 @@ Follow the steps below in order to deploy it into a minikube local cluster:
 1. `docker build -t 365widgets .`  
 1. `kubectl apply -k k8s/`  
 1. `kubectl logs job/365widgets -n 365widgets`  
-1. `kubectl remove -k k8s/`  
+1. `kubectl delete -k k8s/`  

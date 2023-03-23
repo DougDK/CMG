@@ -1,3 +1,8 @@
+namespace: 365widgets
+
 resources:
-- job.yaml
 - namespace.yaml
+# - pv-volume.yaml
+# - pv-claim.yaml
+# - job2.yaml
+- job.yaml

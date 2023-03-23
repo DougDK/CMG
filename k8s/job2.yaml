@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: 365widgets
+spec:
+  template:
+    spec:
+      containers:
+      - name: 365widgets
+        image: 365widgets:latest
+        command: ["python",  "app/process.py", "logs/some.log"]
+        imagePullPolicy: Never
+        volumeMounts:
+        - mountPath: "/app/365widgets/logs"
+          name: task-pv-storage
+      volumes:
+      - name: task-pv-storage
+        persistentVolumeClaim:
+          claimName: task-pv-claim
+      restartPolicy: Never
